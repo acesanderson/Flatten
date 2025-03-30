@@ -10,12 +10,22 @@ import requests
 import zipfile
 from io import BytesIO
 import argparse
+import os
+
+token = os.getenv("GITHUB_TOKEN")  # Token expires end of April 2025
+headers = {"Authorization": f"token {token}"}
 
 # Generate examples for testing
-owner = "acesanderson"
-repo = "twig"
-branch = "main"  # or "master" or any other branch name
-example_url = f"https://api.github.com/repos/{owner}/{repo}/zipball/{branch}"
+
+repos = [
+    {"owner": "acesanderson", "repo": "Kramer", "branch": "main"},
+    {"owner": "acesanderson", "repo": "Chain", "branch": "main"},
+    {"owner": "acesanderson", "repo": "Leviathan", "branch": "master"},
+    {"owner": "acesanderson", "repo": "Mentor", "branch": "agentic"},
+    {"owner": "acesanderson", "repo": "Daisy", "branch": "main"},
+    {"owner": "acesanderson", "repo": "twig", "branch": "main"},
+    {"owner": "acesanderson", "repo": "ask", "branch": "master"},
+]
 
 
 # Our functions
@@ -31,7 +41,7 @@ def parse_user_inputted_url(base_url: str) -> str:
 
 
 def grab_repo(repo_url: str) -> str:
-    response = requests.get(repo_url)
+    response = requests.get(repo_url, headers=headers)
     # Check if the request was successful
     if response.status_code != 200:
         raise Exception(f"Failed to fetch repository: {response.status_code}")
@@ -54,6 +64,21 @@ def grab_repo(repo_url: str) -> str:
         return output
 
 
+def grab_repos():
+    output = []
+    for repository in repos:
+        try:
+            match repository:  # Experimenting with a dictionary pattern with /match/case
+                case {"owner": owner, "repo": repo, "branch": branch}:
+                    url = (
+                        f"https://api.github.com/repos/{owner}/{repo}/zipball/{branch}"
+                    )
+                    output.append(grab_repo(url))
+        except Exception as e:
+            print(f"Error fetching {repository['repo']}: {e}")
+    return output
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("base_url", type=str, nargs="?", help="The repository to fetch")
@@ -63,9 +88,10 @@ def main():
         output = grab_repo(repo_url)
         print(output)
     else:
-        output = grab_repo(example_url)
-        print(output)
+        print("Please provide a repository URL.")
 
 
 if __name__ == "__main__":
-    main()
+    # main()
+    output = grab_repos()
+    print(output[1])

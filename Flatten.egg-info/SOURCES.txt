@@ -1,0 +1,7 @@
+README.md
+setup.py
+Flatten.egg-info/PKG-INFO
+Flatten.egg-info/SOURCES.txt
+Flatten.egg-info/dependency_links.txt
+Flatten.egg-info/entry_points.txt
+Flatten.egg-info/top_level.txt
