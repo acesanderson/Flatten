@@ -18,13 +18,15 @@ headers = {"Authorization": f"token {token}"}
 # Generate examples for testing
 
 repos = [
-    {"owner": "acesanderson", "repo": "Kramer", "branch": "main"},
-    {"owner": "acesanderson", "repo": "Chain", "branch": "main"},
-    {"owner": "acesanderson", "repo": "Leviathan", "branch": "master"},
-    {"owner": "acesanderson", "repo": "Mentor", "branch": "agentic"},
-    {"owner": "acesanderson", "repo": "Daisy", "branch": "main"},
-    {"owner": "acesanderson", "repo": "twig", "branch": "main"},
-    {"owner": "acesanderson", "repo": "ask", "branch": "master"},
+    # {"owner": "acesanderson", "repo": "Kramer", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "Chain", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "Leviathan", "branch": "master"},
+    # {"owner": "acesanderson", "repo": "Mentor", "branch": "agentic"},
+    # {"owner": "acesanderson", "repo": "Curator", "branch": "v2"},
+    # {"owner": "acesanderson", "repo": "Daisy", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "twig", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "ask", "branch": "master"},
+    {"owner": "acesanderson", "repo": "Haddock", "branch": "main"},
 ]
 
 
@@ -94,4 +96,5 @@ def main():
 if __name__ == "__main__":
     # main()
     output = grab_repos()
-    print(output[1])
+    for data in output:
+        print(data)
