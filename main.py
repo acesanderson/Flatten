@@ -77,48 +77,91 @@ def grab_repos():
     return output
 
 
-def get_files(cwd: Path) -> list[Path]:
-    """
-    Get all of the python and markdown files from the project directories.
-    """
-    project_files = cwd.walk()
-    project_files = list(project_files)
-    files = []
-    for file in project_files:
-        for f in file:
-            if isinstance(f, list):
-                for ff in f:
-                    if str(ff).endswith((".py", ".md")):  # Include both .py and .md
-                        files.append(ff)
-    return files
-
-
 def create_directory_xml(current_working_directory: Path) -> ET.Element:
     """
     Create an XML representation of the directory structure,
-    including Python files (*.py) and Markdown files (*.md)
+    including Python files (*.py) and Markdown files (*.md),
+    while excluding patterns similar to gitignore.
     """
     directory_tree = ET.Element("directory_tree")
     directory = ET.SubElement(
         directory_tree, "directory", name=current_working_directory.name
     )
 
-    # Directories to exclude
-    exclude_dirs = [".git", "__pycache__", ".egg-info", ".venv", "venv", ".env"]
+    # Patterns to exclude (similar to .gitignore)
+    exclude_dirs = [
+        "__pycache__",
+        ".git",
+        ".pytest_cache",
+        ".mypy_cache",
+        "*.egg-info",
+        ".DS_Store",
+        ".venv",
+        "venv",
+        ".env",
+        "cache",
+        "*.pyc",
+    ]
 
     for dirpath, dirnames, filenames in os.walk(current_working_directory):
         # Skip excluded directories
         basename = os.path.basename(dirpath)
-        if any(excluded in basename for excluded in exclude_dirs):
+
+        # Check if the current directory should be excluded
+        should_exclude = False
+        for pattern in exclude_dirs:
+            if pattern.startswith("*."):
+                # Handle wildcard patterns for extensions
+                if basename.endswith(pattern[1:]):
+                    should_exclude = True
+                    break
+            elif pattern == basename or pattern in dirpath:
+                should_exclude = True
+                break
+
+        if should_exclude:
             continue
 
         # Also modify dirnames in-place to prevent os.walk from entering excluded dirs
-        dirnames[:] = [
-            d for d in dirnames if not any(excluded in d for excluded in exclude_dirs)
-        ]
+        i = 0
+        while i < len(dirnames):
+            dirname = dirnames[i]
+            exclude_this_dir = False
+            for pattern in exclude_dirs:
+                if pattern.startswith("*."):
+                    # Handle wildcard patterns for extensions
+                    if dirname.endswith(pattern[1:]):
+                        exclude_this_dir = True
+                        break
+                elif pattern == dirname:
+                    exclude_this_dir = True
+                    break
 
+            if exclude_this_dir:
+                dirnames.pop(i)
+            else:
+                i += 1
+
+        # Create subdirectory in XML
         subdir = ET.SubElement(directory, "directory", name=basename)
+
+        # Add files to the XML structure, excluding unwanted file types
         for filename in filenames:
+            # Skip excluded file patterns
+            skip_file = False
+            for pattern in exclude_dirs:
+                if pattern.startswith("*."):
+                    if filename.endswith(pattern[1:]):
+                        skip_file = True
+                        break
+                elif pattern == filename:
+                    skip_file = True
+                    break
+
+            if skip_file:
+                continue
+
+            # Include only files with desired extensions
             if filename.endswith((".py", ".md")):  # Include both .py and .md
                 file_path = os.path.join(dirpath, filename)
                 file_element = ET.SubElement(
@@ -126,6 +169,68 @@ def create_directory_xml(current_working_directory: Path) -> ET.Element:
                 )
 
     return directory_tree
+
+
+def get_files(cwd: Path) -> list[Path]:
+    """
+    Get all of the python and markdown files from the project directories,
+    excluding patterns similar to gitignore.
+    """
+    # Patterns to exclude (similar to .gitignore)
+    exclude_patterns = [
+        "__pycache__",
+        ".git",
+        ".pytest_cache",
+        ".mypy_cache",
+        "*.egg-info",
+        ".DS_Store",
+        ".venv",
+        "venv",
+        ".env",
+        "cache",
+        "*.pyc",
+    ]
+
+    files = []
+    for dirpath, dirnames, filenames in os.walk(cwd):
+        # Skip excluded directories
+        path_str = str(dirpath)
+        should_skip = False
+        for pattern in exclude_patterns:
+            if pattern.startswith("*."):
+                # Skip directories ending with pattern
+                if path_str.endswith(pattern[1:]):
+                    should_skip = True
+                    break
+            elif pattern in path_str:
+                should_skip = True
+                break
+
+        if should_skip:
+            continue
+
+        # Process files in non-excluded directories
+        for filename in filenames:
+            # Skip excluded file patterns
+            skip_file = False
+            for pattern in exclude_patterns:
+                if pattern.startswith("*."):
+                    if filename.endswith(pattern[1:]):
+                        skip_file = True
+                        break
+                elif pattern == filename:
+                    skip_file = True
+                    break
+
+            if skip_file:
+                continue
+
+            # Include only files with desired extensions
+            if filename.endswith((".py", ".md")):
+                file_path = os.path.join(dirpath, filename)
+                files.append(Path(file_path))
+
+    return files
 
 
 def get_file_contents(files: list[Path]) -> ET.Element:
