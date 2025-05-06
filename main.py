@@ -4,6 +4,8 @@ Future functionality:
 - do the same from project directory
 - generate a tree of the zipfile (and project directory) as part of llm context
 - allow customizing branch + file extension
+
+NOTE: Path.walk() would be handy way to get all file contents for a repo
 """
 
 import requests
