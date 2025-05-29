@@ -13,13 +13,15 @@ XMLString: TypeAlias = str  # Type alias for XML string
 # Generate examples for testing
 
 repos = [
-    {"owner": "acesanderson", "repo": "Kramer", "branch": "main"},
-    {"owner": "acesanderson", "repo": "Chain", "branch": "main"},
-    {"owner": "acesanderson", "repo": "Leviathan", "branch": "master"},
-    {"owner": "acesanderson", "repo": "Mentor", "branch": "agentic"},
-    {"owner": "acesanderson", "repo": "Daisy", "branch": "main"},
-    {"owner": "acesanderson", "repo": "twig", "branch": "main"},
-    {"owner": "acesanderson", "repo": "ask", "branch": "master"},
+    # {"owner": "acesanderson", "repo": "Kramer", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "Chain", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "Leviathan", "branch": "master"},
+    # {"owner": "acesanderson", "repo": "Mentor", "branch": "agentic"},
+    # {"owner": "acesanderson", "repo": "Curator", "branch": "v2"},
+    # {"owner": "acesanderson", "repo": "Daisy", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "twig", "branch": "main"},
+    # {"owner": "acesanderson", "repo": "ask", "branch": "master"},
+    {"owner": "acesanderson", "repo": "Haddock", "branch": "main"},
 ]
 
 
