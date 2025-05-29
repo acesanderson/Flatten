@@ -228,7 +228,7 @@ def get_files(cwd: Path) -> list[Path]:
                 continue
 
             # Include only files with desired extensions
-            if filename.endswith((".py", ".md")):
+            if filename.endswith((".py", ".md", ".lua")):
                 file_path = os.path.join(dirpath, filename)
                 files.append(Path(file_path))
 
