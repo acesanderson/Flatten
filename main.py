@@ -50,7 +50,7 @@ def grab_repo(repo_url: str) -> str:
     with zipfile.ZipFile(zip_file, "r") as z:
         file_list = z.namelist()
         for file in file_list:
-            if file.endswith(".py"):
+            if file.endswith(".py") or file.endswith(".lua"):
                 with z.open(file) as f:
                     content = f.read()
                     output += "-------------------------------------------\n"
@@ -81,7 +81,7 @@ def create_directory_xml(current_working_directory: Path) -> ET.Element:
     """
     Create an XML representation of the directory structure,
     including Python files (*.py) and Markdown files (*.md),
-    while excluding patterns similar to gitignore.
+    and lua (*.lua) while excluding patterns similar to gitignore.
     """
     directory_tree = ET.Element("directory_tree")
     directory = ET.SubElement(
@@ -162,7 +162,7 @@ def create_directory_xml(current_working_directory: Path) -> ET.Element:
                 continue
 
             # Include only files with desired extensions
-            if filename.endswith((".py", ".md")):  # Include both .py and .md
+            if filename.endswith((".py", ".md", ".lua")):  # Include both .py and .md
                 file_path = os.path.join(dirpath, filename)
                 file_element = ET.SubElement(
                     subdir, "file", name=filename, path=file_path
